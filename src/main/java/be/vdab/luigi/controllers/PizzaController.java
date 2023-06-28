@@ -1,8 +1,13 @@
 package be.vdab.luigi.controllers;
 
+import be.vdab.luigi.domain.Pizza;
+import be.vdab.luigi.exceptions.PizzaNietGevondenException;
 import be.vdab.luigi.services.PizzaService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
 
 @RestController
 public class PizzaController {
@@ -15,4 +20,15 @@ public class PizzaController {
     long findAantal() {
         return pizzaService.findAantal();
     }
+    @GetMapping("pizzas/{id}")
+    Pizza findById(@PathVariable long id){
+        return pizzaService.findById(id).orElseThrow(() ->
+                new PizzaNietGevondenException(id));
+    }
+//    @GetMapping("pizzas/verkoop/{jaar}/{maand}/{dag}")
+//    BigDecimal verkoop(
+//            @PathVariable int jaar,
+//            @PathVariable int maand,
+//            @PathVariable int dag) {
+//    }
 }

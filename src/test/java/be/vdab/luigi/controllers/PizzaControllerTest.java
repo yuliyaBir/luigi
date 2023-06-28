@@ -24,4 +24,24 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
                 .andExpectAll(status().isOk(),
                         jsonPath("$").value(countRowsInTable(PIZZAS)));
     }
+    private long idVanTest1Pizza(){
+        return jdbcTemplate.queryForObject("select id from pizzas where naam = 'test1'", Long.class);
+    }
+
+    @Test
+    void findById() throws Exception{
+        var id = idVanTest1Pizza();
+        mockMvc.perform(get("/pizzas/{id}", id))
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("id").value(id),
+                        jsonPath("naam").value("test1")
+                );
+    }
+
+    @Test
+    void findByIdGeefNotFoundBijEenOnbestaandePizza() throws Exception {
+        mockMvc.perform(get("/pizzas/{id}", Long.MAX_VALUE))
+                .andExpect(status().isNotFound());
+    }
 }
