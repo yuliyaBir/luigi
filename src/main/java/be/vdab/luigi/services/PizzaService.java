@@ -15,5 +15,4 @@ public class PizzaService {
     public long findAantal(){
         return pizzaRepository.findAantal();
     }
-
 }
