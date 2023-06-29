@@ -16,19 +16,30 @@ public class PizzaController {
     public PizzaController(PizzaService pizzaService) {
         this.pizzaService = pizzaService;
     }
+    private record IdNaamPrijs(long id, String naam, BigDecimal prijs) {
+        IdNaamPrijs(Pizza pizza) {
+            this(pizza.getId(), pizza.getNaam(), pizza.getPrijs());
+        }
+    }
+
     @GetMapping("pizzas/aantal")
     long findAantal() {
         return pizzaService.findAantal();
     }
+
     @GetMapping("pizzas/{id}")
-    Pizza findById(@PathVariable long id){
-        return pizzaService.findById(id).orElseThrow(() ->
+    IdNaamPrijs findById(@PathVariable long id) {
+        return pizzaService.findById(id)
+                .map(pizza -> new IdNaamPrijs(pizza))
+                .orElseThrow(() ->
                 new PizzaNietGevondenException(id));
     }
-//    @GetMapping("pizzas/verkoop/{jaar}/{maand}/{dag}")
+
+    //    @GetMapping("pizzas/verkoop/{jaar}/{maand}/{dag}")
 //    BigDecimal verkoop(
 //            @PathVariable int jaar,
 //            @PathVariable int maand,
 //            @PathVariable int dag) {
 //    }
+
 }
