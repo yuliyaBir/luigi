@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -37,5 +38,13 @@ public class PizzaRepository {
         } catch (IncorrectResultSizeDataAccessException ex) {
             return Optional.empty();
         }
+    }
+    public List<Pizza> findAll(){
+        var sql = """
+                select id, naam, prijs, winst
+                from pizzas
+                order by naam;
+                """;
+        return jdbcTemplate.query(sql, pizzaMapper);
     }
 }

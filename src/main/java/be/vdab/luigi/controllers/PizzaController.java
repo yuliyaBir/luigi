@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 @RestController
 public class PizzaController {
@@ -34,6 +35,12 @@ public class PizzaController {
                 .orElseThrow(() ->
                 new PizzaNietGevondenException(id));
     }
+    @GetMapping("pizzas")
+    Stream<IdNaamPrijs> findAll(){
+        return pizzaService.findAll()
+                .stream()
+                .map(pizza -> new IdNaamPrijs(pizza));
+    }
 
     //    @GetMapping("pizzas/verkoop/{jaar}/{maand}/{dag}")
 //    BigDecimal verkoop(
@@ -41,5 +48,6 @@ public class PizzaController {
 //            @PathVariable int maand,
 //            @PathVariable int dag) {
 //    }
+
 
 }
