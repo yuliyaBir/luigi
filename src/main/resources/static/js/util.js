@@ -12,7 +12,7 @@ export function verberg(id) {
 byId(id).hidden = true;
 }
 export function verwijderChildElementenVan(element) {
-while (element.lastChild !== null) {
+    while (element.lastChild !== null) {
     element.lastChild.remove();
 }
 }
