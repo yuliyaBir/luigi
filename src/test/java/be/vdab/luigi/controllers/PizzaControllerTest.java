@@ -9,6 +9,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Sql("/pizzas.sql")
 @AutoConfigureMockMvc
@@ -72,5 +74,14 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
                         status().isOk(),
                         jsonPath("length()").value(
                                 countRowsInTableWhere(PIZZAS, "prijs between 10 and 20")));
+    }
+
+    @Test
+    void deleteVerwijdertPizza() throws Exception{
+        var id = idVanTest1Pizza();
+        mockMvc.perform(delete("/pizzas/{id}", id))
+                .andExpect(
+                        status().isOk());
+        assertThat(countRowsInTableWhere(PIZZAS, "id = " + id)).isZero();
     }
 }
