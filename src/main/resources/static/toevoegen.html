@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Pizza toevoegen</title>
+    <script src="js/toevoegen.js" type="module" defer></script>
+    <link rel="icon" href="images/luigi.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/luigi.css">
+</head>
+<body>
+<div><a href="index.html">Menu</a></div>
+<h1>Pizza toevoegen</h1>
+<label>Naam:
+  <span id="naamFout" class="fout" hidden>Verplicht</span>
+  <input id="naam" type="text" required autofocus></input>
+</label>
+<label>Prijs:
+  <span id="prijsFout" class="fout" hidden></span>
+  <input id="prijs" type="number" step="0.01" required>
+</label>
+<button id="toevoegen">Toevoegen</button>
+<table id="pizzaTable" hidden>
+  <thead>
+  <tr>
+    <th>id</th>
+    <th>naam</th>
+    <th>prijs</th>
+    <th>winst</th>
+  </tr>
+  </thead>
+  <tbody id="pizzaBody"></tbody>
+</table>
+<div id="storing" class="fout" hidden>Storing, contacteer helpdesk</div>
+</body>
+</html>

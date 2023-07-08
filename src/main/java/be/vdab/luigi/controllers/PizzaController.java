@@ -1,12 +1,10 @@
 package be.vdab.luigi.controllers;
 
 import be.vdab.luigi.domain.Pizza;
+import be.vdab.luigi.dto.NieuwePizza;
 import be.vdab.luigi.exceptions.PizzaNietGevondenException;
 import be.vdab.luigi.services.PizzaService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -55,18 +53,23 @@ public class PizzaController {
                 .stream()
                 .map(pizza -> new IdNaamPrijs(pizza));
     }
+
     @DeleteMapping("pizzas/{id}")
-    void delete (@PathVariable long id){
+    void delete(@PathVariable long id) {
         pizzaService.delete(id);
     }
 
-
+    @PostMapping("pizzas")
+    long create(@RequestBody NieuwePizza nieuwePizza) {
+        return pizzaService.create(nieuwePizza);
+    }
     //    @GetMapping("pizzas/verkoop/{jaar}/{maand}/{dag}")
 //    BigDecimal verkoop(
 //            @PathVariable int jaar,
 //            @PathVariable int maand,
 //            @PathVariable int dag) {
 //    }
+
 
 
 }

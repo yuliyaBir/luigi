@@ -3,10 +3,16 @@ package be.vdab.luigi.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -16,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     private final static String PIZZAS = "pizzas";
+    private final static Path TEST_RESOURCES = Path.of("src/test/resources");
     private final MockMvc mockMvc;
     PizzaControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
@@ -83,5 +90,16 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
                 .andExpect(
                         status().isOk());
         assertThat(countRowsInTableWhere(PIZZAS, "id = " + id)).isZero();
+    }
+
+    @Test
+    void create() throws Exception {
+        var jsonData = Files.readString(TEST_RESOURCES.resolve("correctePizza.json"));
+        var responseBody = mockMvc.perform(post("/pizzas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonData))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(countRowsInTableWhere(PIZZAS, "naam = 'test3' and id = " + responseBody)).isOne();
     }
 }
