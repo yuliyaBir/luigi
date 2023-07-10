@@ -1,6 +1,7 @@
 package be.vdab.luigi.repositories;
 
 import be.vdab.luigi.domain.Pizza;
+import be.vdab.luigi.exceptions.PizzaNietGevondenException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -89,5 +90,15 @@ public class PizzaRepository {
             statement.setBigDecimal(3, pizza.getWinst());
             return statement;}, keyHolder);
         return keyHolder.getKey().longValue();
+    }
+    public void updatePrijs (long id, BigDecimal prijs){
+        var sql = """
+                update pizzas
+                set prijs = ?
+                where id = ?
+                """;
+        if (jdbcTemplate.update(sql, prijs, id) == 0){
+            throw new PizzaNietGevondenException(id);
+        }
     }
 }

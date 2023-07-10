@@ -10,9 +10,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     private final static String PIZZAS = "pizzas";
+    private final static String PIZZA_PRIJZEN = "pizzaprijzen";
     private final static Path TEST_RESOURCES = Path.of("src/test/resources");
     private final MockMvc mockMvc;
     PizzaControllerTest(MockMvc mockMvc) {
@@ -111,6 +114,38 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
     void createMetVerkeerdeDataMislukt(String bestandNaam) throws Exception {
         var jsonData = Files.readString(TEST_RESOURCES.resolve(bestandNaam));
         mockMvc.perform(post("/pizzas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonData))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void patchWijzigtPrijsEnVoegPizzaPrijsToe() throws Exception{
+        var jsonData =
+                Files.readString(TEST_RESOURCES.resolve("correctePrijsWijziging.json"));
+        var id = idVanTest1Pizza();
+        mockMvc.perform(patch("/pizzas/{id}/prijs", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonData))
+                .andExpect(status().isOk());
+        assertThat(countRowsInTableWhere(PIZZAS, "prijs = 7.7 and id = " + id)).isOne();
+        assertThat(countRowsInTableWhere(PIZZA_PRIJZEN, "prijs = 7.7 and pizzaId = " + id)).isOne();
+    }
+
+    @Test
+    void patchVanOnbestandePizzaMislukt() throws Exception {
+        var jsonData = Files.readString(
+                TEST_RESOURCES.resolve("correctePrijsWijziging.json"));
+        mockMvc.perform(patch("/pizzas/{id}/prijs", Long.MAX_VALUE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonData))
+                .andExpect(status().isNotFound());
+    }
+    @ParameterizedTest
+    @ValueSource(strings = {"prijsWijzigingZonderPrijs.json", "prijsWijzigingMetNegatievePrijs.json"})
+    void patchMetVerkeerdeDataMislukt(String bestandsNaam) throws Exception {
+        var jsonData = Files.readString(TEST_RESOURCES.resolve(bestandsNaam));
+        var id = idVanTest1Pizza();
+        mockMvc.perform(patch("/pizzas/{id}/prijs", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonData))
                 .andExpect(status().isBadRequest());
