@@ -25,6 +25,7 @@ function verbergPizzaEnFouten (){
     verberg("naamFout");
     verberg("prijsFout");
     verberg("storing");
+    verberg("conflict");
 }
 async function voegToe(pizza){
     var response = await fetch("pizzas",
@@ -35,6 +36,12 @@ async function voegToe(pizza){
     if (response.ok){
         window.location = "allepizzas.html";
     } else{
-        toon("storing");
+        if (response.status === 409){
+            const responseBody = await response.json();
+            setText("conflict", responseBody.message);
+            toon("conflict");
+        } else {
+            toon("storing");
+        }
     }
 }
